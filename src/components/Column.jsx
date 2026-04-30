@@ -2,7 +2,7 @@ import { useState } from "react";
 import Card from "./Card";
 
 const Column = ({ title, cards }) => {
-    const [width, setWidth] = useState(380);
+    const [width, setWidth] = useState(360);
     const [height, setHeight] = useState(500);
 
     const handleWidthMouseDown = (e) => {
