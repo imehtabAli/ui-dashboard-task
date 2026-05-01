@@ -1,43 +1,47 @@
-const Card = ({ title, tag1, tag2, comments, attachments, description, users }) => {
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
-    return (
+const Card = ({ id, title, tag1, tag2, comments, attachments, description, users }) => {
 
-        <div className="card">
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
 
-            <div className="card-tags">
-                <span className="tag">{tag1}</span>
-                <span className="tag"> {tag2}</span>
-                <span className="tag">Sep 12 - 16</span>
-            </div>
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition
+  };
 
-            <h4>{title}</h4>
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="card"
+      {...attributes} {...listeners}
+    >
 
-            <p>{description}</p>
+      <div className="card-tags">
+        <span className="tag">{tag1}</span>
+        <span className="tag">{tag2}</span>
+      </div>
 
-            <div className="card-footer">
+      <h4>{title}</h4>
+      <p>{description}</p>
 
-                <div className="avatars">
-                    {users && users.map((user, index) => {
-                        return (
-                            <img
-                                key={index}
-                                src={user}
-                                alt="user"
-                                className="avatar"
-                            />
-                        );
-                    })}
-                </div>
-
-                <div className="meta">
-                    <span>💬 {comments} Comments</span>
-                    <span>📎 {attachments} attachments</span>
-                </div>
-
-            </div>
-
+      <div className="card-footer">
+        <div className="avatars">
+          {users?.map((user, i) => (
+            <img key={i} src={user} className="avatar" />
+          ))}
         </div>
-    );
+
+        <div className="meta">
+          <span>💬 {comments}</span>
+          <span>📎 {attachments}</span>
+        </div>
+      </div>
+
+    </div>
+  );
 };
 
 export default Card;

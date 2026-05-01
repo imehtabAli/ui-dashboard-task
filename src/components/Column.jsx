@@ -1,17 +1,25 @@
 import { useState } from "react";
 import Card from "./Card";
+import { SortableContext } from "@dnd-kit/sortable";
+import { useDroppable } from "@dnd-kit/core";
 
 const Column = ({ title, cards }) => {
     const [width, setWidth] = useState(360);
     const [height, setHeight] = useState(500);
 
+    const { setNodeRef } = useDroppable({
+        id: title
+    });
+
     const handleWidthMouseDown = (e) => {
+        e.stopPropagation();
+
+        const startX = e.clientX;
         const startWidth = width;
-        const columnRight = e.target.parentElement.getBoundingClientRect().right;
 
         const move = (e) => {
-            const newWidth = startWidth + (e.clientX - columnRight);
-            setWidth(newWidth);
+            const newWidth = startWidth + (e.clientX - startX);
+            setWidth(Math.max(250, newWidth));
         };
 
         const stop = () => {
@@ -24,11 +32,14 @@ const Column = ({ title, cards }) => {
     };
 
     const handleHeightMouseDown = (e) => {
+        e.stopPropagation();
+
         const startY = e.clientY;
         const startHeight = height;
 
         const move = (e) => {
-            setHeight(startHeight + (e.clientY - startY));
+            const newHeight = startHeight + (e.clientY - startY);
+            setHeight(Math.max(80, newHeight));
         };
 
         const stop = () => {
@@ -41,23 +52,31 @@ const Column = ({ title, cards }) => {
     };
 
     return (
-        <div className="column" style={{ width, height }}>
+        <div ref={setNodeRef} className="column" style={{ width, height }}>
+            
             <div className="column-header">
-                <div>
-                    <span>{title}</span>
-                    <span className="count">{cards.length}</span>
-                </div>
-                <div className="actions">+ •••</div>
+                <span>{title}</span>
+                <span className="count">{cards.length}</span>
             </div>
 
-            {cards.map((card, i) => (
-                <Card key={i} {...card} />
-            ))}
+            <div className="column-body">
+                <SortableContext items={cards.map(card => card.id)}>
+                    {cards.map((card) => (
+                        <Card key={card.id} {...card} />
+                    ))}
+                </SortableContext>
+            </div>
 
             <button className="add-task-btn">+ Add Task</button>
 
-            <div className="resize-handle-vertical" onMouseDown={handleWidthMouseDown} />
-            <div className="resize-handle-horizontal" onMouseDown={handleHeightMouseDown} />
+            <div
+                className="resize-handle-vertical"
+                onMouseDown={handleWidthMouseDown}
+            />
+            <div
+                className="resize-handle-horizontal"
+                onMouseDown={handleHeightMouseDown}
+            />
         </div>
     );
 };
